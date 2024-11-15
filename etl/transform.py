@@ -37,21 +37,15 @@ def transform_data(data_frames):
     film_df = film_df.withColumnRenamed("film_id", "film_film_id") \
                      .withColumnRenamed("last_update", "film_last_update")
 
-    # Uniones entre DataFrames
-    rental_customers_df = rentals_df.join(customers_df, rentals_df["rental_customer_id"] == customers_df["customer_id"], "left")
-    rental_inventory_df = rental_customers_df.join(inventory_df, rental_customers_df["rental_inventory_id"] == inventory_df["inventory_inventory_id"], "left")
-    rental_inventory_films_df = rental_inventory_df.join(film_df, rental_inventory_df["inventory_film_id"] == film_df["film_film_id"], "left")
-    store_inventory_df = inventory_df.join(store_df, inventory_df["store_id"] == store_df["store_store_id"], "left")
-    
-    # Crear un diccionario con los DataFrames transformados
+    #Crear un diccionario con los DataFrames transformados
     transformed_data = {
-        "rental_customers": rental_customers_df,
-        "rental_inventory": rental_inventory_df,
-        "rental_inventory_films": rental_inventory_films_df,
-        "store_inventory": store_inventory_df
+        "customers": customers_df,
+        "rentals": rentals_df,
+        "inventory": inventory_df,
+        "store": store_df,
+        "film": film_df
     }
-
-    logger.info(f"Transformaciones completadas. Total de filas en 'rental_inventory_films': {rental_inventory_films_df.count()}")
+    logger.info(f"Transformaciones completadas")
     
     return transformed_data
 

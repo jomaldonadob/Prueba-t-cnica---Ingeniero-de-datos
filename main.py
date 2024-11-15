@@ -5,6 +5,7 @@ from etl.load import load_data
 from etl.logger import get_logger
 from etl.data_cleaner import clean_film_data, clean_inventory_data, clean_customer_data
 
+
 logger = get_logger("ETL_Main")
 
 def main():
@@ -13,7 +14,7 @@ def main():
         spark = SparkSession.builder \
             .appName("ETL_Spark_Project") \
             .getOrCreate()
-
+        spark.sparkContext.setLogLevel("ERROR")
         # Ruta del archivo Excel de entrada y el directorio de salida
         input_file = "/home/stiven/Documentos/Prueba-t-cnica---Ingeniero-de-datos/data/Films_2.xlsx"
         output_path = "output_data"
@@ -29,12 +30,34 @@ def main():
         
         # Transformación de los datos
         data_frames = transform_data(data_frames)
-
+ 
         # Cargar los datos transformados
         load_data(data_frames, output_path)
 
         logger.info("Proceso ETL completado exitosamente")
+        from workflow import workflows  # Importamos el flujo de trabajo
+        # Procesar cada flujo de trabajo
+        for workflow in workflows:
+            logger.info(f"Procesando: {workflow['description']}")
 
+            # Construir los parámetros necesarios explícitamente
+            params = {
+                "spark": spark,
+                "rentals": data_frames.get("rentals"),
+                "film": data_frames.get("film"),
+                "customers": data_frames.get("customers"),
+                "inventory": data_frames.get("inventory"),
+                "store": data_frames.get("store")
+            }
+
+            # Pasar los parámetros correspondientes a la función
+            query_params = [params[param] for param in workflow["params_required"]]
+            query_result = workflow["query_function"](*query_params)
+
+            # Generar la gráfica
+            workflow["graph_function"](query_result)
+        
+        
     except Exception as e:
         logger.error(f"Ocurrió un error en el proceso ETL: {e}")
         raise  # Relanzamos la excepción para asegurarnos de que el proceso falle correctamente
