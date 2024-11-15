@@ -2,6 +2,7 @@
 Prueba técnica - Ingeniero de datos
 
 Este proyecto implementa un proceso ETL utilizando PySpark para cargar, transformar y almacenar datos desde un archivo Excel.
+Disenado para ejecutarse en una terminal que permita interfaz grafica para visualizar las graficas.
 
 ## Requisitos
 
