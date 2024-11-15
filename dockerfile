@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     python3-tk \
     openjdk-17-jre-headless \
     procps \
+    inotify-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Establecer JAVA_HOME
@@ -15,9 +16,13 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # Establecer el directorio de trabajo
 WORKDIR /app
 
+RUN mkdir input && mkdir output
+
 # Copiar los archivos de requisitos y el código al contenedor
 COPY requirements.txt requirements.txt
 COPY . .
+
+RUN chmod +x main_script.sh
 
 # Copiar el archivo de datos al contenedor
 COPY data/Films_2.xlsx /app/data/Films_2.xlsx
@@ -30,4 +35,4 @@ ENV PATH="/app/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Comando para ejecutar el script principal
-CMD ["python", "main.py"]
+CMD ["bash", "main_script.sh"]

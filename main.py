@@ -4,9 +4,7 @@ from etl.transform import transform_data
 from etl.load import load_data
 from etl.logger import get_logger
 from etl.data_cleaner import clean_film_data, clean_inventory_data, clean_customer_data
-import os
-from dotenv import load_dotenv
-load_dotenv()
+import sys
 
 logger = get_logger("ETL_Main")
 
@@ -18,8 +16,8 @@ def main():
             .getOrCreate()
         spark.sparkContext.setLogLevel("ERROR")
         # Ruta del archivo Excel de entrada y el directorio de salida
-        input_file = os.getenv("INPUT_FILE")
-        output_path = "output_data"
+        input_file = sys.argv[1]
+        output_path = sys.argv[2]
 
         # Ejecución del ETL
         logger.info("Iniciando el proceso ETL")
